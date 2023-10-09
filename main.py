@@ -13,13 +13,8 @@ def key_sort(arr):
 	Returns:
 		arr (list): A list of tuples sorted by it's first component
 	"""
-	page_ranking_table = dict(arr)
-	page_rankings = key_arr(arr)
-	page_rankings = sorts.quick_sort(page_rankings)
-	arr = []
-	for rank in page_rankings:
-		arr.append((rank, page_ranking_table[rank]))
-	return arr
+	page_rankings = sorts.quick_sort(arr, kv=True)
+	return page_rankings
 
 def page_sort(arr, rank_arr):
 	"""
@@ -36,11 +31,11 @@ def page_sort(arr, rank_arr):
 		arr (list): A list sorted by the rank_arr
 	"""
 	reversed_rank_arr = []
-	for tupl in rank_arr:
-		reversed_rank_arr.append((tupl[1], tupl[0]))
+	for tupl in rank_arr: # Reverse rank arr for convenience
+		reversed_rank_arr.append((tupl[1], tupl[0])) # (rank, page) -> (page, rank)
 	page_sorted_arr = []
-	for tupl in reversed_rank_arr:
-		page_sorted_arr.append((arr[tupl[0] - 1], tupl[0]))
+	for tupl in reversed_rank_arr: 
+		page_sorted_arr.append((arr[tupl[0] - 1], tupl[0])) # (index, page)
 	return page_sorted_arr
 
 def make_equinumerous(arr):
@@ -53,7 +48,7 @@ def make_equinumerous(arr):
 		arr (list): A list of tuples with its first component being an element in arr
 		and the second component being a number indexing each element from 1 to len(arr)
 	"""
-	return list(zip(arr, range(1,len(arr) + 1)))
+	return list(zip(arr, range(1,len(arr) + 1))) # [4,4,3] -> [(4,1), (4,2), (3,3)]
 
 def key_arr(arr):
 	"""
@@ -68,46 +63,51 @@ def key_arr(arr):
 	new_arr = []
 	for tupl in arr:
 		new_arr.append(tupl[0])
-	return new_arr
+	return new_arr # [(4,1), (4,2), (3,3)] -> [4, 4, 3]
 
-if __name__ == "__main__":
+if __name__ == "__main__": # To prevent import execution
 	engine_1=[]
 	with open("source1.txt", "r") as file:
 		for line in file:
-			engine_1.append(int(line.strip("\n")))
+			engine_1.append(int(line.strip("\n"))) # Load engine listing data, strip newline and treat as integer
 	engine_1= np.array(engine_1)
+	eng1_cpy = engine_1 # Get a copy of the data for later use
 	engine_2=[]
 	with open("source2.txt", "r") as file:
 		for line in file:
 			engine_2.append(int(line.strip("\n")))
 	engine_2= np.array(engine_2)
+	eng2_cpy = engine_2
 	engine_3=[]
 	with open("source3.txt", "r") as file:
 		for line in file:
 			engine_3.append(int(line.strip("\n")))
 	engine_3= np.array(engine_3)
+	eng3_cpy = engine_3
 	engine_4=[]
 	with open("source4.txt", "r") as file:
 		for line in file:
 			engine_4.append(int(line.strip("\n")))
 	engine_4= np.array(engine_4)
+	eng4_cpy = engine_4
 	engine_5=[]
 	with open("source5.txt", "r") as file:
 		for line in file:
 			engine_5.append(int(line.strip("\n")))
 	engine_5= np.array(engine_5)
+	eng5_cpy = engine_5
 	
-	engine_rank = engine_1 + engine_2 + engine_3 + engine_4 + engine_5
-	engine_rank = make_equinumerous(engine_rank)
-	engine_rank = key_sort(engine_rank)
-	engine_1 = page_sort(engine_1, engine_rank)
+	engine_rank = engine_1 + engine_2 + engine_3 + engine_4 + engine_5 # Sum the rankings of each page
+	engine_rank = make_equinumerous(engine_rank) # Used to keep track of pages
+	engine_rank = key_sort(engine_rank) # Sort the rankings
+	engine_1 = page_sort(engine_1, engine_rank) # Sort the engines by the page rankings
 	engine_2 = page_sort(engine_2, engine_rank)
 	engine_3 = page_sort(engine_3, engine_rank)
 	engine_4 = page_sort(engine_4, engine_rank)
 	engine_5 = page_sort(engine_5, engine_rank)
 	
 	start = time.time()
-	eng1_inv = inv.count_inversions(engine_1, kv=True, func="ms")
+	eng1_inv = inv.count_inversions(engine_1, kv=True, func="ms") # Count inversions and time
 	end = time.time()
 	print("Number of inversions in engine 1 using merge sort: ", eng1_inv)
 	print("In ", end - start, " seconds")
@@ -138,14 +138,14 @@ if __name__ == "__main__":
 	for i in range(6):
 		print(" ", engine_rank[i][1])
 
-	engine_1 = eng1_inv*np.array(key_arr(engine_1))
-	engine_2 = eng2_inv*np.array(key_arr(engine_2))
-	engine_3 = eng3_inv*np.array(key_arr(engine_3))
-	engine_4 = eng4_inv*np.array(key_arr(engine_4))
-	engine_5 = eng5_inv*np.array(key_arr(engine_5))
-	engine_rank = engine_1 + eng2_inv + engine_3 + engine_4 + engine_5
-	engine_rank = make_equinumerous(engine_rank)
-	engine_rank = key_sort(engine_rank)
+	engine_1 = eng1_inv*np.array(eng1_cpy) # Weight each engine by the inversion count
+	engine_2 = eng2_inv*np.array(eng2_cpy)
+	engine_3 = eng3_inv*np.array(eng3_cpy)
+	engine_4 = eng4_inv*np.array(eng4_cpy)
+	engine_5 = eng5_inv*np.array(eng5_cpy)
+	engine_rank = engine_1 + eng2_inv + engine_3 + engine_4 + engine_5 # Rank the pages by the sum of the indexes
+	engine_rank = make_equinumerous(engine_rank) # Used to keep track of pages
+	engine_rank = key_sort(engine_rank) # Sort the rankings from lowest to highest
 	print("\nFirst 5 pages of weighted rank-sorted array:")
 	for i in range(6):
 		print(" ", engine_rank[i][1])
