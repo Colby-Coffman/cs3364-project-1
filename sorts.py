@@ -1,4 +1,9 @@
-def quick_sort(arr):
+# Most functions here are not used in the project, only QS is. The other functions are simply here
+# To test the algorithm implementation, they may be removed if desired. 
+
+
+
+def quick_sort(arr, kv=False):
 	"""
 	Sorts a list using quicksort
 	Args:
@@ -9,9 +14,14 @@ def quick_sort(arr):
 	if len(arr) == 1 or len(arr) == 0:
 		return arr
 	pivot = int(len(arr)/2)
-	less = [i for i in arr if i<arr[pivot]]
-	equal = [i for i in arr if i==arr[pivot]]
-	greater = [i for i in arr if i>arr[pivot]]
+	if kv == True:
+		less = [i for i in arr if i[0]<arr[pivot][0]]
+		equal = [i for i in arr if i[0]==arr[pivot][0]]
+		greater = [i for i in arr if i[0]>arr[pivot][0]]
+	else:
+		less = [i for i in arr if i<arr[pivot]]
+		equal = [i for i in arr if i==arr[pivot]]
+		greater = [i for i in arr if i>arr[pivot]]
 	return quick_sort(less) + equal + quick_sort(greater)
 
 def merge_sort(arr):
